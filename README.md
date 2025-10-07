@@ -37,57 +37,30 @@
     - 🧭 Dashboard
         - Main Dashboard
         - Analytics
-
-    🛒 Products Management
-
-        Product List
-
-        Create Product
-
-        Edit Product
-
-        Categories Management
-
-        Product Images
-
-    📦 Orders Management
-
-        Order List
-
-        Order Details
-
-        Update Order Status
-
-    👥 User Management
-
-        User List
-
-        View User Profile
-
-        Ban/Delete User
-
-        ⚙️ Settings
-
-        Site Settings
-
-        Payment Settings
-
-        Shipping Settings
-
-    Admin Profile
-
-    🔒 Roles & Permissions
-
-        Role Management
-
-        Permission Management
-
-        Assign Role to User
-
-        🧾 Reports / Analytics
-
-        Sales Reports
-
-        Top Products
-
-        Customer Reports
+    - 🛒 Products Management
+        - Product List
+        - Create Product
+        - Edit Product
+        - Categories Management
+        - Product Images
+    - 📦 Orders Management
+        - Order List
+        - Order Details
+        - Update Order Status
+    - 👥 User Management
+        - User List
+        - View User Profile
+        - Ban/Delete User
+    - ⚙️ Settings
+        - Site Settings
+        - Payment Settings
+        - Shipping Settings
+        - Admin Profile
+    - 🔒 Roles & Permissions
+        - Role Management
+        - Permission Management
+        - Assign Role to User
+        - 🧾 Reports / Analytics
+        - Sales Reports
+        - Top Products
+        - Customer Reports
