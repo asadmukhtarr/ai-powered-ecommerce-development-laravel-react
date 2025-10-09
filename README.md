@@ -35,8 +35,6 @@
         - Logout
         - Forgot Password
     - 🧭 Dashboard
-        - Main Dashboard
-        - Analytics
     - 🛒 Products Management
         - Product List
         - Create Product
@@ -56,11 +54,5 @@
         - Payment Settings
         - Shipping Settings
         - Admin Profile
-    - 🔒 Roles & Permissions
-        - Role Management
-        - Permission Management
-        - Assign Role to User
-        - 🧾 Reports / Analytics
-        - Sales Reports
-        - Top Products
-        - Customer Reports
+    - 🧾 Reports / Analytics
+
