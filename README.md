@@ -40,19 +40,15 @@
         - Create Product
         - Edit Product
         - Categories Management
-        - Product Images
     - 📦 Orders Management
         - Order List
         - Order Details
-        - Update Order Status
     - 👥 User Management
         - User List
         - View User Profile
         - Ban/Delete User
     - ⚙️ Settings
         - Site Settings
-        - Payment Settings
-        - Shipping Settings
-        - Admin Profile
     - 🧾 Reports / Analytics
+    - logout
 
