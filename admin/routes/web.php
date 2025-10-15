@@ -41,7 +41,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // 🛒 Products Management
     Route::get('/products', ProductsIndex::class)->name('products.index');
     Route::get('/products/create', ProductsCreate::class)->name('products.create');
-    Route::get('/products/{product}/edit', ProductsEdit::class)->name('products.edit');
+    Route::get('/products/edit/{id}', ProductsEdit::class)->name('products.edit');
     Route::get('/categories', ProductCategories::class)->name('products.categories');
 
     // 📦 Orders Management
