@@ -10,4 +10,7 @@ class CategoryController extends Controller
     {
         return response()->json(Category::select('id','name')->get());
     }
+    public function show($id){
+        return response()->json(Category::find($id));
+    }
 }

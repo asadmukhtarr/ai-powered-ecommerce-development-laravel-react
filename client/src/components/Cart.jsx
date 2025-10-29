@@ -1,6 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token"); // 🔐 Sanctum token
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  // Fetch cart items
+  useEffect(() => {
+    if (!token) return;
+
+    fetch("http://localhost:8000/api/cart", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          navigate("/login");
+          return;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setCartItems(data.cart || []); // depends on your API response
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching cart:", err);
+        setLoading(false);
+      });
+  }, [token, navigate]);
+
+  // Calculate totals
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const shipping = cartItems.length > 0 ? 1000 : 0;
+  const total = subtotal + shipping;
+
+  if (loading) return <p className="text-center mt-5">Loading cart...</p>;
+
   return (
     <>
       {/* Header */}
@@ -18,75 +69,41 @@ export default function Cart() {
         <div className="row">
           {/* Cart Items */}
           <div className="col-lg-8">
-            <div className="table-responsive">
-              <table className="table table-bordered align-middle">
-                <thead className="cart-header">
-                  <tr>
-                    <th>Product</th>
-                    <th>Title</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Item 1 */}
-                  <tr>
-                    <td>
-                      <img
-                        src="https://picsum.photos/60?random=1"
-                        alt="Product"
-                        className="product-img"
-                      />
-                    </td>
-                    <td>iPhone 13 Pro Max</td>
-                    <td>PKR 245,000</td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control quantity-input"
-                        defaultValue="1"
-                        min="1"
-                      />
-                    </td>
-                    <td>PKR 245,000</td>
-                    <td>
-                      <button className="btn btn-danger btn-sm">
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-
-                  {/* Item 2 */}
-                  <tr>
-                    <td>
-                      <img
-                        src="https://picsum.photos/60?random=2"
-                        alt="Product"
-                        className="product-img"
-                      />
-                    </td>
-                    <td>Wireless Headphones</td>
-                    <td>PKR 12,000</td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control quantity-input"
-                        defaultValue="2"
-                        min="1"
-                      />
-                    </td>
-                    <td>PKR 24,000</td>
-                    <td>
-                      <button className="btn btn-danger btn-sm">
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {cartItems.length === 0 ? (
+              <p className="text-center text-muted">Your cart is empty.</p>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-bordered align-middle">
+                  <thead className="cart-header">
+                    <tr>
+                      <th>Product</th>
+                      <th>Title</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cartItems.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <img
+                            src={`http://localhost:8000/storage/${item.product.image}`}
+                            alt={item.product.name}
+                            width="60"
+                            height="60"
+                          />
+                        </td>
+                        <td>{item.product.name}</td>
+                        <td>PKR {item.price}</td>
+                        <td>{item.quantity}</td>
+                        <td>PKR {item.price * item.quantity}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <a href="/products" className="btn btn-outline-info">
               <i className="fa fa-arrow-left"></i> Continue Shopping
@@ -103,15 +120,15 @@ export default function Cart() {
                 <ul className="list-group list-group-flush mb-3">
                   <li className="list-group-item d-flex justify-content-between">
                     <span>Subtotal</span>
-                    <span>PKR 269,000</span>
+                    <span>PKR {subtotal}</span>
                   </li>
                   <li className="list-group-item d-flex justify-content-between">
                     <span>Shipping</span>
-                    <span>PKR 1,000</span>
+                    <span>PKR {shipping}</span>
                   </li>
                   <li className="list-group-item d-flex justify-content-between fw-bold text-info">
                     <span>Total</span>
-                    <span>PKR 270,000</span>
+                    <span>PKR {total}</span>
                   </li>
                 </ul>
                 <a href="/checkout" className="btn btn-info w-100">
