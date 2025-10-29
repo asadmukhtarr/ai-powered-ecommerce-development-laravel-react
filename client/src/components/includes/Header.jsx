@@ -1,13 +1,65 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData) {
+        setIsLoggedIn(true);
+        setUser(JSON.parse(userData));
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuthStatus();
+
+    // Listen for storage changes (in case of logout from other tabs)
+    window.addEventListener('storage', checkAuthStatus);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Update state
+    setIsLoggedIn(false);
+    setUser(null);
+    
+    // Redirect to home page
+    navigate('/');
+    
+    // Optional: Call logout API to invalidate token on server
+    // fetch('http://127.0.0.1:8000/api/logout', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //     'Accept': 'application/json',
+    //   }
+    // });
+  };
+
   return (
     <header>
       <nav className="navbar navbar-expand-lg bg-info saif">
         <div className="container">
           <Link to="/" className="navbar-brand">
-            <i className="fa fa-user-circle"></i> Asad Mukhtar
+            <i className="fa fa-user-circle"></i> 
+            {user ? user.name : "Asad Mukhtar"}
           </Link>
 
           <button
@@ -45,10 +97,12 @@ function Header() {
                 </Link>
               </li>
 
+              {/* Dynamic Account Dropdown */}
               <li className="nav-item m-1">
                 <div className="btn-group">
                   <button type="button" className="btn btn-danger btn-md">
-                    <i className="fa fa-user-circle"></i> Account
+                    <i className="fa fa-user-circle"></i> 
+                    {isLoggedIn ? (user?.name || 'Account') : 'Account'}
                   </button>
                   <button
                     type="button"
@@ -59,20 +113,44 @@ function Header() {
                     <span className="visually-hidden">Toggle Dropdown</span>
                   </button>
                   <ul className="dropdown-menu">
-                    <li>
-                      <Link className="dropdown-item" to="/login">
-                        Login
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/register">
-                        Register
-                      </Link>
-                    </li>
+                    {isLoggedIn ? (
+                      // Show when user is logged in
+                      <>
+                        <li>
+                          <Link className="dropdown-item" to="/home">
+                            <i className="fa fa-tachometer me-2"></i> Home
+                          </Link>
+                        </li>
+                        <li><hr className="dropdown-divider" /></li>
+                        <li>
+                          <button 
+                            className="dropdown-item text-danger" 
+                            onClick={handleLogout}
+                          >
+                            <i className="fa fa-sign-out me-2"></i>Logout
+                          </button>
+                        </li>
+                      </>
+                    ) : (
+                      // Show when user is not logged in
+                      <>
+                        <li>
+                          <Link className="dropdown-item" to="/login">
+                            <i className="fa fa-sign-in me-2"></i>Login
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item" to="/register">
+                            <i className="fa fa-user-plus me-2"></i>Register
+                          </Link>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </li>
 
+              {/* Cart with dynamic badge count */}
               <li className="nav-item">
                 <Link
                   to="/cart"
@@ -80,11 +158,20 @@ function Header() {
                 >
                   <i className="fa fa-shopping-cart"></i> Cart
                   <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
-                    3
+                    {isLoggedIn ? '3' : '0'}
                     <span className="visually-hidden">items in cart</span>
                   </span>
                 </Link>
               </li>
+
+              {/* Additional navigation for logged-in users */}
+              {isLoggedIn && (
+                <li className="nav-item">
+                  <Link to="/home" className="nav-link">
+                    <i className="fa fa-dashboard"></i> App
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

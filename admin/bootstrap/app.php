@@ -11,25 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
-        $middleware->web(append: [
-            \App\Http\Middleware\VerifyCsrfToken::class,
+    ->withMiddleware(function (Middleware $middleware) {
+        // Disable CSRF for all API routes
+        $middleware->validateCsrfTokens(except: [
+            'api/*'
         ]);
-
-        // API middleware stack
+        
+        // Add Sanctum middleware
         $middleware->api(prepend: [
-            // Laravel Sanctum for token authentication
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ]);
-
-        // Optional: alias style middleware for routes
-        $middleware->alias([
-            'auth' => \App\Http\Middleware\Authenticate::class,
-            'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
+    ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
